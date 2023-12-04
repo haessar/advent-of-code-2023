@@ -83,7 +83,7 @@ Once all of the originals and copies have been processed, you end up with 1 inst
 Process all of the original and copied scratchcards until no more scratchcards are won. Including the original set of scratchcards, how many total scratchcards do you end up with?
 """
 
-copies = {idx: 1 for idx in range(1, 200)}
+copies = {idx: 1 for idx in range(1, len(data) + 1)}
 total_cards = 0
 for idx, card in enumerate(data, 1):
     _, numbers = card.split(':')
@@ -91,7 +91,7 @@ for idx, card in enumerate(data, 1):
     winners = set(winning_set.split()).intersection(have_set.split())
     if winners:
         for jdx in range(idx + 1, (idx + 1) + len(winners)):
-            if jdx < 200:
+            if jdx <= len(data):
                 copies[jdx] += copies[idx]
     total_cards += copies[idx]
 print(total_cards)
