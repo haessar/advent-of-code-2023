@@ -78,14 +78,10 @@ For each game, find the minimum set of cubes that must have been present. What i
 """
 import math
 
-with open("input/day_2", "r") as f:
-    data = f.read().splitlines()
-
 power_sum = 0
 for game in data:
     min_counts = {"red": 0, "green": 0, "blue": 0}
-    g, sets = game.split(":")
-    possible = True
+    _, sets = game.split(":")
     for s in sets.split(";"):
         for d in s.split(","):
             num, col = d.strip().split(" ")
