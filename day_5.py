@@ -107,7 +107,7 @@ mapping = {}
 relationships = {}
 for i, line in enumerate(open('input/day_5.txt')):
     if line.startswith("seeds:"):
-        seeds = map(int, line.split(":")[1].split())
+        seeds = list(map(int, line.split(":")[1].split()))
     elif line == "\n":
         pass
     else:
@@ -121,7 +121,7 @@ for i, line in enumerate(open('input/day_5.txt')):
             mapping[source][range(source_start, source_start + length)] = range(dest_start, dest_start + length)
 
 
-def recur_mappings(val, source):
+def recur_mappings(val, source='seed'):
     if source in mapping:
         for k, v in mapping[source].items():
             if val in k:
@@ -134,9 +134,61 @@ def recur_mappings(val, source):
 
 lowest_location = None
 for seed in seeds:
-    val = recur_mappings(seed, 'seed')
+    val = recur_mappings(seed)
     if lowest_location is None:
         lowest_location = val
     else:
         lowest_location = min(val, lowest_location)
+print(lowest_location)
+
+
+"""
+--- Part Two ---
+
+Everyone will starve if you only plant such a small number of seeds. Re-reading the almanac, it looks like the seeds: line actually describes ranges of seed numbers.
+
+The values on the initial seeds: line come in pairs. Within each pair, the first value is the start of the range and the second value is the length of the range. So, in the first line of the example above:
+
+seeds: 79 14 55 13
+
+This line describes two ranges of seed numbers to be planted in the garden. The first range starts with seed number 79 and contains 14 values: 79, 80, ..., 91, 92. The second range starts with seed number 55 and contains 13 values: 55, 56, ..., 66, 67.
+
+Now, rather than considering four seed numbers, you need to consider a total of 27 seed numbers.
+
+In the above example, the lowest location number can be obtained from seed number 82, which corresponds to soil 84, fertilizer 84, water 84, light 77, temperature 45, humidity 46, and location 46. So, the lowest location number is 46.
+
+Consider all of the initial seed numbers listed in the ranges on the first line of the almanac. What is the lowest location number that corresponds to any of the initial seed numbers?
+"""
+
+
+def find_lowest_location(start, end, step=1000):
+    lowest_location = None
+    for seed in range(int(start), int(end), int(step)):
+        val = recur_mappings(seed)
+        if lowest_location is None:
+            lowest_location = val
+            lowest_location_seed = seed
+        elif val < lowest_location:
+            lowest_location = val
+            lowest_location_seed = seed
+    return lowest_location_seed, lowest_location
+
+
+lowest_location = None
+for idx, number in enumerate(seeds):
+    step = 1000
+    # even
+    if not idx % 2:
+        start = number
+    # odd
+    else:
+        end = start + number
+        while step >= 1:
+            seed, val = find_lowest_location(start, end, step)
+            if lowest_location is None:
+                lowest_location = val
+            lowest_location = min(val, lowest_location)
+            start = seed - step
+            end = seed + step
+            step /= 10
 print(lowest_location)
