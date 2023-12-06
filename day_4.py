@@ -37,7 +37,7 @@ So, in this example, the Elf's pile of scratchcards is worth 13 points.
 Take a seat in the large pile of colorful cards. How many points are they worth in total?
 """
 
-with open('input/day_4', 'r') as f:
+with open('input/day_4.txt', 'r') as f:
     data = f.read().splitlines()
 
 total_sum = 0

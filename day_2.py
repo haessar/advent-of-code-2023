@@ -34,7 +34,7 @@ total_cubes = {
     "blue": 14
 }
 
-with open("input/day_2", "r") as f:
+with open("input/day_2.txt", "r") as f:
     data = f.read().splitlines()
 
 possible_sum = 0

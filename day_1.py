@@ -36,7 +36,7 @@ def parse_calibration_value(string):
 
 
 cv_sum = 0
-with open('input/day_1', 'r') as f:
+with open('input/day_1.txt', 'r') as f:
     for text_code in f.read().splitlines():
         cv_sum += parse_calibration_value(text_code)
 print(cv_sum)
@@ -76,7 +76,7 @@ word_digits = {
 }
 pattern = "|".join(sorted(re.escape(word) for word in word_digits))
 true_cv_sum = 0
-with open('input/day_1', 'r') as f:
+with open('input/day_1.txt', 'r') as f:
     for text_code in f.read().splitlines():
         true_text_code = re.sub(pattern, lambda x: word_digits.get(x.group(0)), text_code)
         true_cv_sum += parse_calibration_value(true_text_code)

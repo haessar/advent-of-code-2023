@@ -35,7 +35,7 @@ from string import punctuation
 
 special = frozenset(punctuation.replace('.', ''))
 
-with open('input/day_3', 'r') as f:
+with open('input/day_3.txt', 'r') as f:
     data = f.read().splitlines()
 
 test_data = \
