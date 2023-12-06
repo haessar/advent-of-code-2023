@@ -46,19 +46,26 @@ To see how much margin of error you have, determine the number of ways you can b
 Determine the number of ways you could beat the record in each race. What do you get if you multiply these numbers together?
 """
 import math
+from tqdm import tqdm
 
 with open('input/day_6.txt', 'r') as f:
     times, distances = f.read().splitlines()
 
-ways_to_win = []
-for idx, time in enumerate(map(int, times.split(":")[1].split())):
-    best_distance = int(distances.split(":")[1].split()[idx])
-    ways_to_win.append(0)
-    for hold_time in range(1, time):
+
+def calc_ways_to_win(time, best_distance):
+    ways_to_win = 0
+    for hold_time in tqdm(range(1, time)):
         race_time = time - hold_time
         distance = hold_time * race_time
         if distance > best_distance:
-            ways_to_win[idx] += 1
+            ways_to_win += 1
+    return ways_to_win
+
+
+ways_to_win = []
+for idx, time in enumerate(map(int, times.split(":")[1].split())):
+    best_distance = int(distances.split(":")[1].split()[idx])
+    ways_to_win.append(calc_ways_to_win(time, best_distance))
 print(math.prod(ways_to_win))
 
 
@@ -81,14 +88,8 @@ Now, you have to figure out how many ways there are to win this single race. In 
 
 How many ways can you beat the record in this one much longer race?
 """
-from tqdm import tqdm
 
 time = int(''.join(times.split(":")[1].split()))
 best_distance = int(''.join(distances.split(":")[1].split()))
-ways_to_win = 0
-for hold_time in tqdm(range(1, time)):
-    race_time = time - hold_time
-    distance = hold_time * race_time
-    if distance > best_distance:
-        ways_to_win += 1
+ways_to_win = calc_ways_to_win(time, best_distance)
 print(ways_to_win)
