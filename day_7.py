@@ -130,14 +130,14 @@ QQQJA 483
 With the new joker rule, the total winnings in this example are 5905.
 
 Using the new joker rule, find the rank of every hand in your set. What are the new total winnings?
-
 """
+
 cards_by_type = defaultdict(list)
 
 sort_order = ["A", "K", "Q", "T", "9", "8", "7", "6", "5", "4", "3", "2", "J"]
 
 for hand in data:
-    cards, bid = hand.split()
+    cards, _ = hand.split()
     if set(cards) != {"J"}:
         dummy_cards = cards.replace("J", Counter(cards.replace("J", "")).most_common(1)[0][0])
     else:
