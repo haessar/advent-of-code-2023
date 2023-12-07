@@ -136,15 +136,12 @@ cards_by_type = defaultdict(list)
 
 sort_order = ["A", "K", "Q", "T", "9", "8", "7", "6", "5", "4", "3", "2", "J"]
 
-dummy_to_real = {}
-
 for hand in data:
     cards, bid = hand.split()
     if set(cards) != {"J"}:
         dummy_cards = cards.replace("J", Counter(cards.replace("J", "")).most_common(1)[0][0])
     else:
         dummy_cards = cards.replace("J", "A")
-    dummy_to_real[dummy_cards] = cards
     assign_cards_by_type(cards, cards_by_type, dummy_cards)
 
 print(calc_total_winnings(bids, cards_by_type, sort_order))
