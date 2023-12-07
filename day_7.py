@@ -50,8 +50,7 @@ So, the first step is to put the hands in order of strength:
     32T3K is the only one pair and the other hands are all a stronger type, so it gets rank 1.
     KK677 and KTJJT are both two pair. Their first cards both have the same label, but the second card of KK677 is stronger (K vs T), so KTJJT gets rank 2 and KK677 gets rank 3.
     T55J5 and QQQJA are both three of a kind. QQQJA has a stronger first card, so it gets rank 5 and T55J5 gets rank 4.
-card_value = {2: '2', 3: '3', 4: '4', 5: '5', 6: '6', 7: '7', 8: '8', 9: '9',
-              10: 'T', 11: 'J', 12: 'Q', 13: 'K', 14: 'A'}
+
 Now, you can determine the total winnings of this set of hands by adding up the result of multiplying each hand's bid with its rank (765 * 1 + 220 * 2 + 28 * 3 + 684 * 4 + 483 * 5). So the total winnings in this example are 6440.
 
 Find the rank of every hand in your set. What are the total winnings?
@@ -66,31 +65,86 @@ bids = {}
 
 sort_order = ["A", "K", "Q", "J", "T", "9", "8", "7", "6", "5", "4", "3", "2"]
 
-for hand in data:
-    cards, bid = hand.split()
-    bids[cards] = int(bid)
-    uniq = len(set(cards))
+
+def assign_cards_by_type(cards, cards_by_type, dummy_cards=None):
+    if not dummy_cards:
+        dummy_cards = cards
+    uniq = len(set(dummy_cards))
     if uniq == 5:
         cards_by_type['high_card'].append(cards)
     elif uniq == 4:
         cards_by_type['one_pair'].append(cards)
     elif uniq == 3:
-        if max(Counter(cards).values()) == 2:
+        if max(Counter(dummy_cards).values()) == 2:
             cards_by_type['two_pair'].append(cards)
         else:
             cards_by_type['three_of_a_kind'].append(cards)
     elif uniq == 2:
-        if max(Counter(cards).values()) == 3:
+        if max(Counter(dummy_cards).values()) == 3:
             cards_by_type['full_house'].append(cards)
         else:
             cards_by_type['four_of_a_kind'].append(cards)
     elif uniq == 1:
         cards_by_type['five_of_a_kind'].append(cards)
 
-rank = 1
-total_winnings = 0
-for type in ['high_card', 'one_pair', 'two_pair', 'three_of_a_kind', 'full_house', 'four_of_a_kind', 'five_of_a_kind']:
-    for hand in sorted(cards_by_type[type], key=lambda cards: [sort_order.index(c) for c in cards], reverse=True):
-        total_winnings += bids[hand] * rank
-        rank += 1
-print(total_winnings)
+
+def calc_total_winnings(bids, cards_by_type, sort_order):
+    rank = 1
+    total_winnings = 0
+    for type in ['high_card', 'one_pair', 'two_pair', 'three_of_a_kind', 'full_house', 'four_of_a_kind', 'five_of_a_kind']:
+        for hand in sorted(cards_by_type[type], key=lambda cards: [sort_order.index(c) for c in cards], reverse=True):
+            total_winnings += bids[hand] * rank
+            rank += 1
+    return total_winnings
+
+
+for hand in data:
+    cards, bid = hand.split()
+    bids[cards] = int(bid)
+    assign_cards_by_type(cards, cards_by_type)
+
+print(calc_total_winnings(bids, cards_by_type, sort_order))
+
+
+"""
+--- Part Two ---
+
+To make things a little more interesting, the Elf introduces one additional rule. Now, J cards are jokers - wildcards that can act like whatever card would make the hand the strongest type possible.
+
+To balance this, J cards are now the weakest individual cards, weaker even than 2. The other cards stay in the same order: A, K, Q, T, 9, 8, 7, 6, 5, 4, 3, 2, J.
+
+J cards can pretend to be whatever card is best for the purpose of determining hand type; for example, QJJQ2 is now considered four of a kind. However, for the purpose of breaking ties between two hands of the same type, J is always treated as J, not the card it's pretending to be: JKKK2 is weaker than QQQQ2 because J is weaker than Q.
+
+Now, the above example goes very differently:
+
+32T3K 765
+T55J5 684
+KK677 28
+KTJJT 220
+QQQJA 483
+
+    32T3K is still the only one pair; it doesn't contain any jokers, so its strength doesn't increase.
+    KK677 is now the only two pair, making it the second-weakest hand.
+    T55J5, KTJJT, and QQQJA are now all four of a kind! T55J5 gets rank 3, QQQJA gets rank 4, and KTJJT gets rank 5.
+
+With the new joker rule, the total winnings in this example are 5905.
+
+Using the new joker rule, find the rank of every hand in your set. What are the new total winnings?
+
+"""
+cards_by_type = defaultdict(list)
+
+sort_order = ["A", "K", "Q", "T", "9", "8", "7", "6", "5", "4", "3", "2", "J"]
+
+dummy_to_real = {}
+
+for hand in data:
+    cards, bid = hand.split()
+    if set(cards) != {"J"}:
+        dummy_cards = cards.replace("J", Counter(cards.replace("J", "")).most_common(1)[0][0])
+    else:
+        dummy_cards = cards.replace("J", "A")
+    dummy_to_real[dummy_cards] = cards
+    assign_cards_by_type(cards, cards_by_type, dummy_cards)
+
+print(calc_total_winnings(bids, cards_by_type, sort_order))
