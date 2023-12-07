@@ -61,7 +61,7 @@ from collections import Counter, defaultdict
 with open('input/day_7.txt', 'r') as f:
     data = f.read().splitlines()
 
-rankings = defaultdict(list)
+cards_by_type = defaultdict(list)
 bids = {}
 
 sort_order = ["A", "K", "Q", "J", "T", "9", "8", "7", "6", "5", "4", "3", "2"]
@@ -71,26 +71,26 @@ for hand in data:
     bids[cards] = int(bid)
     uniq = len(set(cards))
     if uniq == 5:
-        rankings['high_card'].append(cards)
+        cards_by_type['high_card'].append(cards)
     elif uniq == 4:
-        rankings['one_pair'].append(cards)
+        cards_by_type['one_pair'].append(cards)
     elif uniq == 3:
         if max(Counter(cards).values()) == 2:
-            rankings['two_pair'].append(cards)
+            cards_by_type['two_pair'].append(cards)
         else:
-            rankings['three_of_a_kind'].append(cards)
+            cards_by_type['three_of_a_kind'].append(cards)
     elif uniq == 2:
         if max(Counter(cards).values()) == 3:
-            rankings['full_house'].append(cards)
+            cards_by_type['full_house'].append(cards)
         else:
-            rankings['four_of_a_kind'].append(cards)
+            cards_by_type['four_of_a_kind'].append(cards)
     elif uniq == 1:
-        rankings['five_of_a_kind'].append(cards)
+        cards_by_type['five_of_a_kind'].append(cards)
 
 rank = 1
 total_winnings = 0
 for type in ['high_card', 'one_pair', 'two_pair', 'three_of_a_kind', 'full_house', 'four_of_a_kind', 'five_of_a_kind']:
-    for hand in sorted(rankings[type], key=lambda cards: [sort_order.index(c) for c in cards], reverse=True):
+    for hand in sorted(cards_by_type[type], key=lambda cards: [sort_order.index(c) for c in cards], reverse=True):
         total_winnings += bids[hand] * rank
         rank += 1
 print(total_winnings)
