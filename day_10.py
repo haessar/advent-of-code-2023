@@ -288,31 +288,20 @@ count_within_loop = 0
 for idx, row in enumerate(field.array):
     for jdx, col in enumerate(row):
         if (idx, jdx) not in seen:
-            x_dist_to_border = min(abs(0 - idx), abs(len(field.array) - idx))
-            y_dist_to_border = min(abs(0 - jdx), abs(len(field.array) - jdx))
             edges_crossed = 0
-            on_edge = False
             for x in reversed(range(idx)):
                 if (x, jdx) in seen:
                     pipe = field.array[x][jdx]
                     if pipe == '-':
                         edges_crossed += 1
+                    # Account for edge cases
                     elif pipe in ["L", "J"]:
-                        if not on_edge:
-                            on_edge = True
-                            edge_start = pipe
-                    elif pipe == "F":
-                        if edge_start == "J":
+                        edge_start = pipe
+                    elif pipe in ["F", "7"]:
+                        if (edge_start == "J" and pipe == "F") or (edge_start == "L" and pipe == "7"):
                             edges_crossed += 1
                         edge_start = ''
-                        on_edge = False
-                    elif pipe == "7":
-                        if edge_start == "L":
-                            edges_crossed += 1
-                        edge_start = ''
-                        on_edge = False
-                else:
-                    on_edge = False
+            # Odd number of edge crossings correspond to point within loop
             if edges_crossed % 2 != 0:
                 count_within_loop += 1
 print(count_within_loop)
