@@ -113,7 +113,7 @@ sum_arrangements = 0
 for line in tqdm(data):
     record = line.split(" ")[0]
     contiguous = list(map(int, line.split(" ")[1].split(",")))
-    missing_broken = sum(contiguous) - Counter(line.split(" ")[0])['#']
+    missing_broken = sum(contiguous) - Counter(record)['#']
     spots = Counter(record)["?"]
     candidates = ['#'] * missing_broken + ['.'] * (spots - missing_broken)
     arrangements = 0
